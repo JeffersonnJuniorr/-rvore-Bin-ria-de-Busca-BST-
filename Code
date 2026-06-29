@@ -1,0 +1,84 @@
+class No:
+    def __init__(self, matricula, nome):
+        self.matricula = matricula
+        self.nome = nome
+        self.esq = None
+        self.dir = None
+
+def inserir(raiz, matricula, nome):
+    if not raiz:
+        return No(matricula, nome)
+    if matricula < raiz.matricula:
+        raiz.esq = inserir(raiz.esq, matricula, nome)
+    elif matricula > raiz.matricula:
+        raiz.dir = inserir(raiz.dir, matricula, nome)
+    else:
+        print("Matricula ja existe!")
+    return raiz
+
+def menor_no(raiz):
+    while raiz.esq:
+        raiz = raiz.esq
+    return raiz
+
+def remover(raiz, matricula):
+    if not raiz:
+        print("Nao encontrado!")
+        return None
+
+    if matricula < raiz.matricula:
+        raiz.esq = remover(raiz.esq, matricula)
+    elif matricula > raiz.matricula:
+        raiz.dir = remover(raiz.dir, matricula)
+    else:
+        # CASO 1: folha
+        if not raiz.esq and not raiz.dir:
+            return None
+        # CASO 2: um filho
+        if not raiz.esq:
+            return raiz.dir
+        if not raiz.dir:
+            return raiz.esq
+        # CASO 3: dois filhos - substitui pelo sucessor
+        suc = menor_no(raiz.dir)
+        raiz.matricula = suc.matricula
+        raiz.nome = suc.nome
+        raiz.dir = remover(raiz.dir, suc.matricula)
+
+    return raiz
+
+def buscar(raiz, matricula):
+    if not raiz or raiz.matricula == matricula:
+        return raiz
+    if matricula < raiz.matricula:
+        return buscar(raiz.esq, matricula)
+    return buscar(raiz.dir, matricula)
+
+def em_ordem(raiz):
+    if not raiz:
+        return
+    em_ordem(raiz.esq)
+    print(f"  {raiz.matricula} - {raiz.nome}")
+    em_ordem(raiz.dir)
+
+raiz = None
+
+while True:
+    print("\n1-Inserir  2-Buscar  3-Remover  4-Listar  0-Sair")
+    opcao = input("Opcao: ")
+
+    if opcao == "1":
+        mat = int(input("Matricula: "))
+        nome = input("Nome: ")
+        raiz = inserir(raiz, mat, nome)
+    elif opcao == "2":
+        mat = int(input("Matricula: "))
+        r = buscar(raiz, mat)
+        print(f"Encontrado: {r.nome}" if r else "Nao encontrado!")
+    elif opcao == "3":
+        mat = int(input("Matricula: "))
+        raiz = remover(raiz, mat)
+    elif opcao == "4":
+        em_ordem(raiz)
+    elif opcao == "0":
+        break
